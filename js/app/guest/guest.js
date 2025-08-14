@@ -53,32 +53,41 @@ export const guest = (() => {
      * @returns {void}
      */
     const showGuestName = () => {
-        /**
-         * Make sure "to=" is the last query string.
-         * Ex. ulems.my.id/?id=some-uuid-here&to=name
-         */
+
         const raw = window.location.search.split('to=');
-        let name = null;
+            let name = null;
 
-        if (raw.length > 1 && raw[1].length >= 1) {
-            name = window.decodeURIComponent(raw[1]);
-        }
+            if (raw.length > 1 && raw[1].length >= 1) {
+                // Decode versi '+' jadi spasi biasa
+                name = decodeName(raw[1]);
+            }
 
-        if (name) {
-            const guestName = document.getElementById('guest-name');
-            const div = document.createElement('div');
-            div.classList.add('m-2');
+            if (name) {
+                const guestName = document.getElementById('guest-name');
+                const div = document.createElement('div');
+                div.classList.add('m-2');
 
-            const template = `<small class="mt-0 mb-1 mx-0 p-0">${util.escapeHtml(guestName?.getAttribute('data-message'))}</small><p class="m-0 p-0" style="font-size: 1.5rem">${util.escapeHtml(name)}</p>`;
-            util.safeInnerHTML(div, template);
+                const template = `<small class="mt-0 mb-1 mx-0 p-0">${util.escapeHtml(guestName?.getAttribute('data-message'))}</small>
+                <p class="m-0 p-0" style="font-size: 1.5rem">${util.escapeHtml(name)}</p>`;
+                util.safeInnerHTML(div, template);
 
-            guestName?.appendChild(div);
-        }
+                guestName?.appendChild(div);
+            }
 
-        const form = document.getElementById('form-name');
-        if (form) {
-            form.value = information.get('name') ?? name;
-        }
+            const form = document.getElementById('form-name');
+            if (form) {
+                form.value = information.get('name') ?? name;
+            }
+
+            // Fungsi encode / decode
+            function encodeName(name) {
+                return name.replace(/ /g, '+');
+            }
+
+            function decodeName(name) {
+                return name.replace(/\+/g, ' ');
+            }
+
     };
 
     /**
